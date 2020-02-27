@@ -26,28 +26,16 @@ public class BodyPanel extends JPanel {
 
     public BodyPanel()
     {
-        this.setLayout(new GridLayout(2, 3));
+        this.setLayout(new GridLayout(3,2));
         createUIComponents();
     }
     
     private void createUIComponents() {
-        // label
-        lblFilename = new JLabel("FileName");
-        lblFilename.setVisible(true);
-        lblFilename.setBounds(0, 0, 10, 31);
-        lblFilename.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        this.add(lblFilename);
-
-        // file location feild
-        textField = new JTextField();
-        textField.setBounds(0, 0, 200, 31);
-        this.add(textField);
-        textField.setColumns(10);
-
-        // Browse Button
-        btnNewButton = new JButton("Browse");
-        btnNewButton.setBounds(258, 26, 105, 31);
-        btnNewButton.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+       
+    	// Browse Button
+        btnNewButton = new JButton("IMPORT");
+        btnNewButton.setBounds(200, 26, 205, 31);
+        btnNewButton.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         btnNewButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent arg0) {
@@ -62,19 +50,33 @@ public class BodyPanel extends JPanel {
                 System.out.println("THE FILE NAME IS " + fname);
             }
         });
-        this.add(btnNewButton);
+        this.add(btnNewButton, BorderLayout.CENTER);
+        add(Box.createVerticalStrut(40));
 
-        // Send button
-        startButton = new JButton("Send");
+        // label
+        lblFilename = new JLabel("FileName");
+        lblFilename.setVisible(true);
+        lblFilename.setBounds(100, 80, 90, 31);
+        lblFilename.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        this.add(lblFilename);
+
+        // file location feild
+        textField = new JTextField();
+        textField.setBounds(100, 80,90 ,31);
+        this.add(textField);
+        textField.setColumns(30);
         
-     startButton.setBounds(75, 82, 90, 31);
+         // Send button
+        startButton = new JButton("Processing");
+        
+         startButton.setBounds(300, 90, 305, 91);
         startButton.addActionListener(new ActionListener() {
 
             @Override
 
             public void actionPerformed(ActionEvent e) {
 
-                //JOptionPane.showMessageDialog(rootPane, "File uploded for processing...!!!");
+     
                 System.out.println("file reading from POI" + filename);
                 processFile= new ProcessFileImpl();
                 try {
@@ -83,15 +85,15 @@ public class BodyPanel extends JPanel {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-
+     JOptionPane.showMessageDialog(getRootPane(), "File uploded for processing...!!!");
             }
         });
 
-        this.add(startButton);
+        this.add(startButton, BorderLayout.CENTER);
 
         // Close button
         btnCancel = new JButton("Cancel");
-        btnCancel.setBounds(182, 82, 90, 31);
+        btnCancel.setBounds(205, 82, 200, 31);
         btnCancel.addActionListener(new ActionListener() {
 
             @Override
@@ -99,6 +101,6 @@ public class BodyPanel extends JPanel {
                 System.exit(0);
             }
         });
-        this.add(btnCancel);
+        this.add(btnCancel, BorderLayout.SOUTH);
     }
 }

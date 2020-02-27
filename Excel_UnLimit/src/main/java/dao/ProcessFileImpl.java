@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import org.apache.poi.ss.util.CellUtil;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -160,33 +161,78 @@ public class ProcessFileImpl implements ProcessFile {
 		File file = new File(fileName);
 		FileOutputStream outputStream = new FileOutputStream(file);
 		addCatalog.write(outputStream);
-		addCatalog.close();
+	
 		outputStream.close();
-        fis.close();
+
 		System.out.println("File Updated");
-		addHeader();
+		addHeader(addCatalog, fis, fileName);
+		
+		//FileInputStream fin = new FileInputStream(new File (fileName));
+		//HSSFWorkbook workbook = new HSSFWorkbook(fin);
+		//workbook = new HSSFWorkbook(fin);
+		//Get first sheet from the workbook
+		//HSSFSheet sheet = workbook.getSheetAt(1);
+
+		
+		
 	}
-	private void addHeader() throws IOException {
+	private void addHeader(Workbook addCatalog ,FileInputStream fis, String fileName) throws IOException {
 		URL urlLoader = ProcessFileImpl.class.getProtectionDomain().getCodeSource().getLocation();
 		String loaderDir = urlLoader.getPath();
 		System.out.printf("loaderDir", loaderDir);
 
-		File file = new File(loaderDir + "/Excel_UnLimit/src_resource/UnLimit.xlsx");
+		File file = new File(loaderDir + "/Excel_UnLimit/src/main/resource/UnLimit.xlsx");
 
-		FileInputStream fis = new FileInputStream(file);
+		FileInputStream inputStream = new FileInputStream(file);
 
-		Workbook refBook = new XSSFWorkbook(fis);
+		Workbook refBook = new XSSFWorkbook(inputStream);
 		Sheet sheet = refBook.getSheetAt(0);
-		Row row = sheet.getRow(0);
-
 		System.out.println("Sheet Name is ****" + sheet.getSheetName());
+		
+	    Iterator<Row> rowIterator = sheet.iterator();
+        while (rowIterator.hasNext()) 
+        {
+            Row row = rowIterator.next();
+            //For each row, iterate through all the columns
+            Iterator<Cell> cellIterator = row.cellIterator();
+             
+            while (cellIterator.hasNext()) 
+            {
+                Cell celldata = cellIterator.next();
+                //Check the cell type and format accordingly
+                switch(celldata.getCellType())
+                {
+                case STRING:
+                    System.out.println(celldata.getStringCellValue() );
+                    break;
+                case NUMERIC:
+                    System.out.println(celldata.getNumericCellValue() );
+                    break;
+                case BOOLEAN:
+                    System.out.println(celldata.getBooleanCellValue() );
+                    break;
+                }
+            }
+            System.out.println("");
 
-		for (int i = 0; i < row.getLastCellNum(); i++) {
-			Cell cell = row.getCell(i);
-
-			System.out.println("sheet values are" + cell.getColumnIndex() + " " + cell.getStringCellValue());
-
-		}
+        }
+         inputStream.close();
+         addCatalog = new HSSFWorkbook(fis);
+      Sheet sheetManual =   addCatalog.getSheetAt(1);
+      Row row = sheetManual.getRow(1);
+		// get the last column index
+		int maxcell = row.getLastCellNum();
+		System.out.println(maxcell);
+		
+		
+		
+		FileOutputStream out = new FileOutputStream(new File(fileName));
+            addCatalog.write(out);
+		        out.close();		
+		
+		
+		addCatalog.close();
+		fis.close();
 	}
 
 }
