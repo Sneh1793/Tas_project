@@ -161,78 +161,71 @@ public class ProcessFileImpl implements ProcessFile {
 		File file = new File(fileName);
 		FileOutputStream outputStream = new FileOutputStream(file);
 		addCatalog.write(outputStream);
-	
-		outputStream.close();
+
+		//sssoutputStream.close();
 
 		System.out.println("File Updated");
 		addHeader(addCatalog, fis, fileName);
-		
-		//FileInputStream fin = new FileInputStream(new File (fileName));
-		//HSSFWorkbook workbook = new HSSFWorkbook(fin);
-		//workbook = new HSSFWorkbook(fin);
-		//Get first sheet from the workbook
-		//HSSFSheet sheet = workbook.getSheetAt(1);
+		outputStream.close();
+		// FileInputStream fin = new FileInputStream(new File (fileName));
+		// HSSFWorkbook workbook = new HSSFWorkbook(fin);
+		// workbook = new HSSFWorkbook(fin);
+		// Get first sheet from the workbook
+		// HSSFSheet sheet = workbook.getSheetAt(1);
 
-		
-		
 	}
-	private void addHeader(Workbook addCatalog ,FileInputStream fis, String fileName) throws IOException {
+
+	private void addHeader(Workbook addCatalog, FileInputStream fis, String fileName) throws IOException {
+		Cell cell = null;
+
 		URL urlLoader = ProcessFileImpl.class.getProtectionDomain().getCodeSource().getLocation();
 		String loaderDir = urlLoader.getPath();
 		System.out.printf("loaderDir", loaderDir);
 
-		File file = new File(loaderDir + "/Excel_UnLimit/src/main/resource/UnLimit.xlsx");
+		File file = new File(loaderDir + "/UnLimit.xlsx");
 
 		FileInputStream inputStream = new FileInputStream(file);
 
 		Workbook refBook = new XSSFWorkbook(inputStream);
 		Sheet sheet = refBook.getSheetAt(0);
 		System.out.println("Sheet Name is ****" + sheet.getSheetName());
-		
-	    Iterator<Row> rowIterator = sheet.iterator();
-        while (rowIterator.hasNext()) 
-        {
-            Row row = rowIterator.next();
-            //For each row, iterate through all the columns
-            Iterator<Cell> cellIterator = row.cellIterator();
-             
-            while (cellIterator.hasNext()) 
-            {
-                Cell celldata = cellIterator.next();
-                //Check the cell type and format accordingly
-                switch(celldata.getCellType())
-                {
-                case STRING:
-                    System.out.println(celldata.getStringCellValue() );
-                    break;
-                case NUMERIC:
-                    System.out.println(celldata.getNumericCellValue() );
-                    break;
-                case BOOLEAN:
-                    System.out.println(celldata.getBooleanCellValue() );
-                    break;
-                }
-            }
-            System.out.println("");
 
-        }
-         inputStream.close();
-         addCatalog = new HSSFWorkbook(fis);
-      Sheet sheetManual =   addCatalog.getSheetAt(1);
-      Row row = sheetManual.getRow(1);
+		Sheet sheetManual = addCatalog.getSheetAt(1);
+		Row row1 = sheetManual.getRow(1);
 		// get the last column index
-		int maxcell = row.getLastCellNum();
+		int maxcell = row1.getLastCellNum();
 		System.out.println(maxcell);
-		
-		
-		
-		FileOutputStream out = new FileOutputStream(new File(fileName));
-            addCatalog.write(out);
-		        out.close();		
-		
-		
+		// getting starting row in manual sheet
+		Row row = sheetManual.getRow(0);
+		// getting starting cell from where to write in manual sheet
+		cell = row.getCell(maxcell + 1);
+
+		Iterator<Row> rowIterator = sheet.iterator();
+		while (rowIterator.hasNext()) {
+			Row rowInputSheet = rowIterator.next();
+			// For each row, iterate through all the columns
+			Iterator<Cell> cellIterator = rowInputSheet.cellIterator();
+
+			while (cellIterator.hasNext()) {
+				Cell celldata = cellIterator.next();
+
+				celldata.getStringCellValue();
+				if (cell == null)
+					row.createCell(maxcell + 1);
+				cell.setCellValue(celldata.getStringCellValue());
+				System.out.println(cell.toString());
+				maxcell++;
+			}
+			System.out.print(" ");
+
+		}
+
+		FileOutputStream out = new FileOutputStream(fileName);
+		addCatalog.write(out);
+		out.close();
 		addCatalog.close();
 		fis.close();
+		inputStream.close();
 	}
 
 }

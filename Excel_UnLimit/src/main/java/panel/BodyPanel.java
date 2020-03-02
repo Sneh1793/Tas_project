@@ -67,7 +67,7 @@ public class BodyPanel extends JPanel {
         textField.setColumns(30);
         
          // Send button
-        startButton = new JButton("Processing");
+        startButton = new JButton("Process");
         
          startButton.setBounds(300, 90, 305, 91);
         startButton.addActionListener(new ActionListener() {
