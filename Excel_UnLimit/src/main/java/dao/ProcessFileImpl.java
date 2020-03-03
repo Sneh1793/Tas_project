@@ -24,6 +24,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -176,8 +177,7 @@ public class ProcessFileImpl implements ProcessFile {
 	}
 
 	private void addHeader(Workbook addCatalog, FileInputStream fis, String fileName) throws IOException {
-		Cell cell = null;
-
+		
 		URL urlLoader = ProcessFileImpl.class.getProtectionDomain().getCodeSource().getLocation();
 		String loaderDir = urlLoader.getPath();
 		System.out.printf("loaderDir", loaderDir);
@@ -191,18 +191,20 @@ public class ProcessFileImpl implements ProcessFile {
 		System.out.println("Sheet Name is ****" + sheet.getSheetName());
 
 		Sheet sheetManual = addCatalog.getSheetAt(1);
-		Row row1 = sheetManual.getRow(1);
-		// get the last column index
-		int maxcell = row1.getLastCellNum();
-		System.out.println(maxcell);
 		// getting starting row in manual sheet
-		Row row = sheetManual.getRow(0);
-		// getting starting cell from where to write in manual sheet
-		cell = row.getCell(maxcell + 1);
-
+		Row rowManualSheet = sheetManual.getRow(0);
+		// get the last column index
+		int maxcell = rowManualSheet.getLastCellNum();
+		System.out.println(maxcell);
+		
+		Row rowInputSheet =sheet.getRow(0);
+		int lastcellIndex = rowInputSheet.getLastCellNum();
+		System.out.println(lastcellIndex);
+		
+			  int i =0;
 		Iterator<Row> rowIterator = sheet.iterator();
 		while (rowIterator.hasNext()) {
-			Row rowInputSheet = rowIterator.next();
+			 rowInputSheet = rowIterator.next();
 			// For each row, iterate through all the columns
 			Iterator<Cell> cellIterator = rowInputSheet.cellIterator();
 
@@ -210,14 +212,17 @@ public class ProcessFileImpl implements ProcessFile {
 				Cell celldata = cellIterator.next();
 
 				celldata.getStringCellValue();
-				if (cell == null)
-					row.createCell(maxcell + 1);
-				cell.setCellValue(celldata.getStringCellValue());
-				System.out.println(cell.toString());
+				
+		Cell newCell = rowManualSheet.createCell(maxcell + 1);
+		// getting starting cell from where to write in manual sheet
+				 	newCell =  rowManualSheet.getCell(maxcell + 1);
+		if (newCell == null)
+				newCell.setCellValue(celldata.getStringCellValue());
+				System.out.println(newCell.toString());
 				maxcell++;
 			}
 			System.out.print(" ");
-
+			sheetManual.getRow(i++);  
 		}
 
 		FileOutputStream out = new FileOutputStream(fileName);
@@ -227,5 +232,6 @@ public class ProcessFileImpl implements ProcessFile {
 		fis.close();
 		inputStream.close();
 	}
+	}
 
-}
+
